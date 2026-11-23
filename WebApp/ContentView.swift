@@ -1,7 +1,6 @@
 import SwiftUI
 import WebKit
 
-@MainActor
 struct WebView: UIViewRepresentable {
     let url: URL
     @Binding var reloadTrigger: Int
@@ -31,6 +30,7 @@ struct WebView: UIViewRepresentable {
         }
     }
 
+    @MainActor
     final class Coordinator: NSObject, WKNavigationDelegate {
         var parent: WebView
         var lastReloadTrigger: Int
@@ -53,9 +53,49 @@ struct WebView: UIViewRepresentable {
         }
 
         private func report(_ error: Error) {
-            let nsError = error as NSError
-            if nsError.code == NSURLErrorCancelled { return } // bỏ qua lỗi hủy (-999)
+            if (error as NSError).code == NSURLErrorCancelled { return }
             parent.errorMessage = error.localizedDescription
+        }
+    }
+}
+
+struct ContentView: View {
+    private let targetURL = URL(string: "https://motioncut.io.vn/")!
+    @State private var reloadTrigger = 0
+    @State private var errorMessage: String?
+
+    var body: some View {
+        ZStack {
+            WebView(url: targetURL, reloadTrigger: $reloadTrigger, errorMessage: $errorMessage)
+                .ignoresSafeArea()
+
+            if let errorMessage = errorMessage {
+                VStack(spacing: 14) {
+                    Text("Không thể tải trang web")
+                        .font(.headline)
+                    Text(errorMessage)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 24)
+                    Button("Thử tải lại") {
+                        reloadTrigger += 1
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                .padding()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color(.systemBackground))
+            }
+        }
+    }
+}
+
+@main
+struct WebAppMain: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
         }
     }
 }
