@@ -43,6 +43,7 @@ jobs:
 
       - name: Build iOS app (Unsigned)
         run: |
+          set -o pipefail
           xcodebuild \
             -project WebApp.xcodeproj \
             -scheme WebApp \
@@ -51,7 +52,8 @@ jobs:
             -derivedDataPath build \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO \
+            OTHER_SWIFT_FLAGS="-parse-as-library"
 
       - name: Package into IPA
         run: |
