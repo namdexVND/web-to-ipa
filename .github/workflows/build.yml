@@ -1,0 +1,66 @@
+name: Build WebView IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup AppIcon from WebApp/icon.png
+        run: |
+          if [ -f "WebApp/icon.png" ]; then
+            mkdir -p WebApp/Assets.xcassets/AppIcon.appiconset
+            cp WebApp/icon.png WebApp/Assets.xcassets/AppIcon.appiconset/icon-1024.png
+            cat << 'EOF' > WebApp/Assets.xcassets/AppIcon.appiconset/Contents.json
+          {
+            "images" : [
+              {
+                "filename" : "icon-1024.png",
+                "idiom" : "universal",
+                "platform" : "ios",
+                "size" : "1024x1024"
+              }
+            ],
+            "info" : {
+              "author" : "xcode",
+              "version" : 1
+            }
+          }
+          EOF
+          fi
+
+      - name: Install xcodegen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build iOS app (Unsigned)
+        run: |
+          xcodebuild \
+            -project WebApp.xcodeproj \
+            -scheme WebApp \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Package into IPA
+        run: |
+          mkdir -p Payload
+          cp -r build/Build/Products/Release-iphoneos/WebApp.app Payload/
+          zip -r WebApp.ipa Payload
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WebApp-IPA
+          path: WebApp.ipa
