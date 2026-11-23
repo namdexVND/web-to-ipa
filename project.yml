@@ -13,7 +13,11 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.namdex.motioncut
         MARKETING_VERSION: "1.0"
         CURRENT_PROJECT_VERSION: "1"
-        INFOPLIST_KEY_CFBundleDisplayName: "MotionCut"
+        GENERATE_INFOPLIST_FILE: YES
+        OTHER_SWIFT_FLAGS: "-parse-as-library"
+        INFOPLIST_KEY_CFBundleDisplayName: "Motion Cut"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
-        INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait"
+        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
