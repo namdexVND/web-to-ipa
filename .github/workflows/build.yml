@@ -15,9 +15,13 @@ jobs:
       - name: Setup AppIcon from WebApp/icon.png
         run: |
           if [ -f "WebApp/icon.png" ]; then
-            mkdir -p WebApp/Assets.xcassets/AppIcon.appiconset
-            cp WebApp/icon.png WebApp/Assets.xcassets/AppIcon.appiconset/icon-1024.png
-            cat << 'EOF' > WebApp/Assets.xcassets/AppIcon.appiconset/Contents.json
+            ICONSET=WebApp/Assets.xcassets/AppIcon.appiconset
+            mkdir -p "$ICONSET"
+            # Ép về 1024x1024 và bỏ kênh alpha (App Store/actool không chấp nhận alpha)
+            sips -z 1024 1024 WebApp/icon.png --out /tmp/icon_tmp.png
+            sips -s format jpeg /tmp/icon_tmp.png --out /tmp/icon_tmp.jpg
+            sips -s format png /tmp/icon_tmp.jpg --out "$ICONSET/icon-1024.png"
+            cat << 'EOF' > "$ICONSET/Contents.json"
           {
             "images" : [
               {
