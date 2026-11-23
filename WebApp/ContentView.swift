@@ -29,7 +29,8 @@ struct WebView: UIViewRepresentable {
         }
     }
 
-    class Coordinator: NSObject, WKNavigationDelegate {
+    @MainActor
+    final class Coordinator: NSObject, WKNavigationDelegate {
         var parent: WebView
         var lastReloadTrigger: Int = 0
 
